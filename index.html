@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberTools - Kali Uslubidagi Veb Terminal</title>
+    <style>
+        :root {
+            /* Kali Linux uslubidagi ranglar palitrasi */
+            --bg-main: #0a0a0a;
+            --bg-panel: #141414;
+            --bg-card: #1f1f1f;
+            --border-color: #2a2a2a;
+            --text-main: #e0e0e0;
+            --text-muted: #888888;
+            --accent: #32a852; /* Hacker yashil */
+            --accent-hover: #23853d;
+            --accent-blue: #007acc;
+            --warning: #f5a623;
+            --danger: #d32f2f;
+            --font-sans: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --font-mono: 'Consolas', 'Courier New', monospace;
+            --radius: 6px;
+            --transition: all 0.2s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* YON MENU (SIDEBAR) */
+        aside {
+            width: 280px;
+            background-color: var(--bg-panel);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+        }
+
+        .brand {
+            padding: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border-color);
+            font-family: var(--font-mono);
+            letter-spacing: 1px;
+        }
+
+        .brand svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--accent);
+        }
+
+        .menu-category {
+            padding: 15px 20px 5px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .menu-list {
+            list-style: none;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .menu-list::-webkit-scrollbar { width: 6px; }
+        .menu-list::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+
+        .menu-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+            color: var(--text-main);
+        }
+
+        .menu-item svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--text-muted);
+            transition: var(--transition);
+        }
+
+        .menu-item:hover {
+            background-color: var(--bg-card);
+        }
+
+        .menu-item.active {
+            background-color: rgba(50, 168, 82, 0.1);
+            border-left-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .menu-item.active svg {
+            fill: var(--accent);
+        }
+
+        /* ASOSIY QISM (MAIN CONTENT) */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-main);
+        }
+
+        header {
+            padding: 15px 24px;
+            background-color: var(--bg-panel);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-badge {
+            background-color: rgba(50, 168, 82, 0.2);
+            color: var(--accent);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-family: var(--font-mono);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition);
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent);
+            transition: var(--transition);
+        }
+
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            gap: 24px;
+            overflow-y: auto;
+        }
+
+        /* BOSHQAQRUV KARTASI (CONTROL PANEL) */
+        .control-panel {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 20px;
+        }
+
+        .panel-title {
+            font-size: 1rem;
+            margin-bottom: 16px;
+            color: var(--text-main);
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .form-control {
+            width: 100%;
+            background-color: var(--bg-main);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 10px 12px;
+            border-radius: var(--radius);
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(50, 168, 82, 0.2);
+        }
+
+        select.form-control {
+            cursor: pointer;
+            appearance: none;
+        }
+
+        .action-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius);
+            font-family: var(--font-sans);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: #000;
+        }
+
+        .btn-primary:not(:disabled):hover {
+            background-color: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:not(:disabled):hover {
+            background-color: var(--border-color);
+        }
+
+        /* TERMINAL OYNASI */
+        .terminal-container {
+            flex: 1;
+            background-color: #050505;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            display: flex;
+            flex-direction: column;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+            min-height: 200px;
+        }
+
+        .terminal-header {
+            background-color: #1a1a1a;
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #333;
+            border-radius: var(--radius) var(--radius) 0 0;
+        }
+
+        .terminal-title {
+            font-family: var(--font-sans);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .terminal-actions button {
+            padding: 4px 8px;
+            font-size: 0.75rem;
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid #333;
+        }
+        
+        .terminal-actions button:hover {
+            color: var(--text-main);
+            border-color: var(--text-muted);
+        }
+
+        .terminal-output {
+            padding: 15px;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            color: var(--accent);
+            overflow-y: auto;
+            flex: 1;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .terminal-output::-webkit-scrollbar { width: 8px; }
+        .terminal-output::-webkit-scrollbar-thumb { background: #333; }
+
+        .log-error { color: var(--danger); }
+        .log-info { color: var(--accent-blue); }
+        .log-success { color: var(--accent); }
+        .log-warning { color: var(--warning); }
+        .log-muted { color: var(--text-muted); }
+
+        .blinking-cursor {
+            display: inline-block;
+            width: 8px;
+            height: 15px;
+            background-color: var(--accent);
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+            margin-left: 5px;
+        }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+        /* MOSLASHUVCHANLIK (RESPONSIVE) */
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            aside { width: 100%; height: auto; max-height: 200px; border-right: none; border-bottom: 1px solid var(--border-color); }
+            .menu-list { display: flex; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 5px; }
+            .menu-category { display: none; }
+            .menu-item { white-space: nowrap; border-left: none; border-bottom: 3px solid transparent; }
+            .menu-item.active { border-left: none; border-bottom-color: var(--accent); }
+            .content-wrapper { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- YON MENU -->
+    <aside>
+        <div class="brand">
+            <svg viewBox="0 0 24 24"><path d="M12,2L2,22H22L12,2M12,5.8L18.4,19H5.6L12,5.8M12,8.8L8.6,16H15.4L12,8.8Z"/></svg>
+            CyberTools UI
+        </div>
+        
+        <div class="menu-list" id="sidebar-menu">
+            <!-- Menyu JavaScript orqali to'ldiriladi -->
+        </div>
+    </aside>
+
+    <!-- ASOSIY QISM -->
+    <main>
+        <header>
+            <div class="header-title" id="current-tool-title">
+                Asbob tanlanmagan
+            </div>
+            <div class="status-badge" id="status-badge">
+                <div class="status-dot" id="status-dot"></div>
+                <span id="status-text">Tizim tayyor</span>
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+            <!-- Boshqaruv paneli (Form) -->
+            <div class="control-panel">
+                <div class="panel-title" id="form-title">Parametrlar</div>
+                <div id="dynamic-form">
+                    <!-- Inputlar JavaScript orqali keladi -->
+                </div>
+                <div class="action-row">
+                    <button class="btn-primary" id="btn-execute">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M8,5.14V19.14L19,12.14L8,5.14Z"/></svg>
+                        Bajarish
+                    </button>
+                    <button class="btn-secondary" id="btn-copy" style="display: none;">
+                        Nusxa olish
+                    </button>
+                </div>
+            </div>
+
+            <!-- Terminal Natijasi -->
+            <div class="terminal-container">
+                <div class="terminal-header">
+                    <span class="terminal-title">root@cybertools:~# natija</span>
+                    <div class="terminal-actions">
+                        <button id="btn-clear-term" title="Tozalash (Esc)">Tozalash</button>
+                    </div>
+                </div>
+                <div class="terminal-output" id="terminal-out">
+                    <span class="log-info">CyberTools v1.1 ga xush kelibsiz.</span><br>
+                    <span class="log-muted">Boshlash uchun chap paneldan asbob tanlang...</span><br>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // --- SVG IKONKALAR ---
+        const icons = {
+            network: '<svg viewBox="0 0 24 24"><path d="M16,11V15H8V11H16M19,15H21V11H19V15M3,15H5V11H3V15M21,17H3V19H21V17M12,4C9.79,4 8,5.79 8,8S9.79,12 12,12 16,10.21 16,8 14.21,4 12,4M12,6A2,2 0 0,1 14,8A2,2 0 0,1 12,10A2,2 0 0,1 10,8A2,2 0 0,1 12,6Z"/></svg>',
+            crypto: '<svg viewBox="0 0 24 24"><path d="M12,17C10.89,17 10,16.1 10,15C10,13.89 10.89,13 12,13A2,2 0 0,1 14,15A2,2 0 0,1 12,17M18,20V10H6V20H18M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6C4.89,22 4,21.1 4,20V10C4,8.89 4.89,8 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z"/></svg>',
+            utility: '<svg viewBox="0 0 24 24"><path d="M22.7,19L13.6,9.9C14.5,7.6 14,4.9 12.1,3C10.1,1 7.1,0.6 4.7,1.7L9,6L6,9L1.6,4.7C0.4,7.1 0.9,10.1 2.9,12.1C4.8,14 7.5,14.5 9.8,13.6L18.9,22.7C19.3,23.1 19.9,23.1 20.3,22.7L22.6,20.4C23.1,20 23.1,19.3 22.7,19Z"/></svg>',
+            info: '<svg viewBox="0 0 24 24"><path d="M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17Z"/></svg>'
+        };
+
+        // --- ASBOBLAR BAZASI (TOOLS DATA) ---
+        const tools = [
+            {
+                id: 'base64',
+                name: 'Base64 Konverter',
+                category: 'Kriptografiya',
+                icon: icons.crypto,
+                fields: [
+                    { id: 'mode', label: 'Amal', type: 'select', options: [{val: 'encode', text: 'Kodlash (Encode)'}, {val: 'decode', text: 'Dekodlash (Decode)'}] },
+                    { id: 'inputText', label: 'Matn kiritish', type: 'text', placeholder: 'Matn yoki shifrni kiriting...' }
+                ],
+                action: async (data, print) => {
+                    if (!data.inputText) return await print('Xatolik: Matn kiritilmadi!', { type: 'error', instant: true });
+                    try {
+                        let result = '';
+                        await print(`[*] Base64 ${data.mode === 'encode' ? 'kodlash' : 'dekodlash'} boshlandi...`, 'info');
+                        await sleep(200);
+                        if (data.mode === 'encode') result = btoa(unescape(encodeURIComponent(data.inputText)));
+                        else result = decodeURIComponent(escape(atob(data.inputText)));
+                        
+                        await print('[+] Natija:', 'success');
+                        await print(result, { instant: true });
+                        return result;
+                    } catch (e) {
+                        await print('[-] Xatolik: Yaroqsiz Base64 formati yoki belgilar mavjud.', 'error');
+                    }
+                }
+            },
+            {
+                id: 'sha256',
+                name: 'SHA-256 Hesh',
+                category: 'Kriptografiya',
+                icon: icons.crypto,
+                fields: [
+                    { id: 'inputText', label: 'Matn', type: 'text', placeholder: 'Maxfiy so\'zni kiriting...' }
+                ],
+                action: async (data, print) => {
+                    if (!data.inputText) return await print('Xatolik: Matn kiritilmadi!', { type: 'error', instant: true });
+                    await print(`[*] "${data.inputText}" uchun SHA-256 hesh hisoblanmoqda...`, 'info');
+                    
+                    if (!window.crypto || !window.crypto.subtle) {
+                        await print('[-] API Xatolik: SHA-256 xavfsiz muhitni (HTTPS yoki Localhost) talab qiladi!', 'error');
+                        await print('[!] Hozirgi muhitda (masalan, file://) bu ishlamaydi.', 'warning');
+                        return null;
+                    }
+
+                    try {
+                        const msgBuffer = new TextEncoder().encode(data.inputText);
+                        const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+                        const hashArray = Array.from(new Uint8Array(hashBuffer));
+                        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                        
+                        await sleep(300);
+                        await print('[+] Hesh tayyor:', 'success');
+                        await print(hashHex, { instant: true });
+                        return hashHex;
+                    } catch (e) {
+                        await print(`[-] Xatolik yuz berdi: ${e.message}`, 'error');
+                    }
+                }
+            },
+            {
+                id: 'passgen',
+                name: 'Parol Generator',
+                category: 'Yordamchi',
+                icon: icons.utility,
+                fields: [
+                    { id: 'length', label: 'Parol uzunligi (8-128)', type: 'number', value: '16', min: '8', max: '128' },
+                    { id: 'complexity', label: 'Murakkablik', type: 'select', options: [{val: 'high', text: 'Yuqori (A-Z, a-z, 0-9, maxsus belgilar)'}, {val: 'medium', text: 'O\'rtacha (A-Z, a-z, 0-9)'}] }
+                ],
+                action: async (data, print) => {
+                    let len = parseInt(data.length);
+                    if (isNaN(len) || len < 8 || len > 128) len = 16;
+                    
+                    await print(`[*] ${len} belgili parol generatsiya qilinmoqda...`, 'info');
+                    
+                    const charsHigh = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+~`|}{[]:;?><,./-=";
+                    const charsMed = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+                    const charset = data.complexity === 'high' ? charsHigh : charsMed;
+                    
+                    let pass = "";
+                    if (window.crypto && window.crypto.getRandomValues) {
+                        let array = new Uint32Array(len);
+                        window.crypto.getRandomValues(array);
+                        for (let i = 0; i < len; i++) {
+                            pass += charset[array[i] % charset.length];
+                        }
+                    } else {
+                        await print('[!] Xavfsiz random APIning imkoni yo\'q, Math.random zaxirasi ishlatilmoqda.', 'warning');
+                        for (let i = 0; i < len; i++) {
+                            pass += charset[Math.floor(Math.random() * charset.length)];
+                        }
+                    }
+                    
+                    await sleep(200);
+                    await print('[+] Parol muvaffaqiyatli yaratildi:', 'success');
+                    await print(pass, { instant: true });
+                    return pass;
+                }
+            },
+            {
+                id: 'portscan',
+                name: 'Port Skaner (Simulyatsiya)',
+                category: 'Tarmoq',
+                icon: icons.network,
+                fields: [
+                    { id: 'target', label: 'Nishon IP yoki Domen', type: 'text', placeholder: 'Masalan: 192.168.1.1 yoki site.com' }
+                ],
+                action: async (data, print) => {
+                    if (!data.target) return await print('Xatolik: Nishon kiritilmadi!', { type: 'error', instant: true });
+                    
+                    await print(`[*] Nmap skanerlashi boshlandi: ${data.target}`, 'info');
+                    await print(`[!] DIQQAT: JavaScript brauzer cheklovlari (CORS va TCP/UDP ulanish yo'qligi) sababli haqiqiy portlarni tekshira olmaydi. Bu faqat ko'rgazmali simulyatsiya!`, 'warning');
+                    
+                    const commonPorts = [
+                        {port: 21, srv: 'ftp'}, {port: 22, srv: 'ssh'}, {port: 23, srv: 'telnet'}, 
+                        {port: 25, srv: 'smtp'}, {port: 53, srv: 'domain'}, {port: 80, srv: 'http'}, 
+                        {port: 110, srv: 'pop3'}, {port: 443, srv: 'https'}, {port: 3306, srv: 'mysql'}, 
+                        {port: 8080, srv: 'http-proxy'}
+                    ];
+                    
+                    await sleep(600);
+                    await print(`Host is up (0.012s latency).`, { instant: true });
+                    await print(`PORT\tSTATE\tSERVICE`, { instant: true });
+                    
+                    let openCount = 0;
+                    for (let p of commonPorts) {
+                        await sleep(100 + Math.random() * 150);
+                        let isOpen = Math.random() > 0.6; 
+                        if (isOpen || p.port === 80 || p.port === 443) {
+                            await print(`${p.port}/tcp\topen\t${p.srv}`, { type: 'success', instant: true });
+                            openCount++;
+                        }
+                    }
+                    
+                    await sleep(300);
+                    await print(`\nNmap done: 1 IP address scanned in 1.45 seconds`, { instant: true });
+                    await print(`Natija: ${openCount} ta port ochiq topildi. (Simulyatsiya)`, 'info');
+                }
+            },
+            {
+                id: 'sysinfo',
+                name: 'Tizim Ma\'lumotlari',
+                category: 'Ma\'lumot Yig\'ish',
+                icon: icons.info,
+                fields: [], 
+                action: async (data, print) => {
+                    await print(`[*] Mahalliy tizim ma'lumotlari yig'ilmoqda...`, 'info');
+                    await sleep(300);
+                    
+                    await print(`User Agent: ${navigator.userAgent}`, { instant: true });
+                    await print(`Platforma: ${navigator.platform}`, { instant: true });
+                    await print(`Til: ${navigator.language}`, { instant: true });
+                    await print(`Ekran o'lchami: ${window.screen.width}x${window.screen.height}`, { instant: true });
+                    await print(`Brauzer Onlaynmi: ${navigator.onLine ? 'Ha' : 'Yo\'q'}`, { instant: true });
+                    await print(`Vaqt: ${new Date().toString()}`, { instant: true });
+                    
+                    await print(`[+] Yig'ish yakunlandi.`, 'success');
+                }
+            }
+        ];
+
+        // --- DASTUR HOLATI ---
+        let currentToolId = localStorage.getItem('kali_last_tool');
+        let lastResult = '';
+        let isExecuting = false;
+
+        // --- DOM ELEMENTLAR ---
+        const sidebarMenu = document.getElementById('sidebar-menu');
+        const formContainer = document.getElementById('dynamic-form');
+        const currentToolTitle = document.getElementById('current-tool-title');
+        const formTitle = document.getElementById('form-title');
+        const btnExecute = document.getElementById('btn-execute');
+        const btnCopy = document.getElementById('btn-copy');
+        const btnClear = document.getElementById('btn-clear-term');
+        const terminalOut = document.getElementById('terminal-out');
+        
+        const statusBadge = document.getElementById('status-badge');
+        const statusText = document.getElementById('status-text');
+        const statusDot = document.getElementById('status-dot');
+
+        // --- YORDAMCHI FUNKSIYALAR ---
+        const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+        
+        function setWorkingStatus(isWorking) {
+            if (isWorking) {
+                statusBadge.style.backgroundColor = 'rgba(245, 166, 35, 0.2)';
+                statusBadge.style.color = 'var(--warning)';
+                statusDot.style.backgroundColor = 'var(--warning)';
+                statusDot.style.boxShadow = '0 0 8px var(--warning)';
+                statusText.textContent = 'Ishlayapti...';
+            } else {
+                statusBadge.style.backgroundColor = 'rgba(50, 168, 82, 0.2)';
+                statusBadge.style.color = 'var(--accent)';
+                statusDot.style.backgroundColor = 'var(--accent)';
+                statusDot.style.boxShadow = '0 0 8px var(--accent)';
+                statusText.textContent = 'Tizim tayyor';
+            }
+        }
+
+        // --- TERMINAL BOSHQARUVI ---
+        let typingCursor = document.createElement('span');
+        typingCursor.className = 'blinking-cursor';
+        
+        async function printToConsole(text, options = {}) {
+            let type = typeof options === 'string' ? options : (options.type || 'normal');
+            let instant = options.instant || false;
+
+            if(typingCursor.parentNode) typingCursor.parentNode.removeChild(typingCursor);
+            
+            const line = document.createElement('div');
+            if (type === 'error') line.className = 'log-error';
+            else if (type === 'info') line.className = 'log-info';
+            else if (type === 'success') line.className = 'log-success';
+            else if (type === 'warning') line.className = 'log-warning';
+            else if (type === 'muted') line.className = 'log-muted';
+
+            terminalOut.appendChild(line);
+            
+            if (instant) {
+                line.textContent = text;
+            } else {
+                for (let i = 0; i < text.length; i++) {
+                    line.textContent += text[i];
+                    if (i % 3 === 0) { 
+                        terminalOut.scrollTop = terminalOut.scrollHeight;
+                        await sleep(2); 
+                    }
+                }
+            }
+            
+            terminalOut.appendChild(typingCursor);
+            terminalOut.scrollTop = terminalOut.scrollHeight;
+        }
+
+        // --- INTERFEYSNI QURISH ---
+        function renderSidebar() {
+            sidebarMenu.innerHTML = '';
+            const categories = [...new Set(tools.map(t => t.category))];
+            
+            categories.forEach(cat => {
+                const catDiv = document.createElement('div');
+                catDiv.className = 'menu-category';
+                catDiv.textContent = cat;
+                sidebarMenu.appendChild(catDiv);
+                
+                const catTools = tools.filter(t => t.category === cat);
+                catTools.forEach(tool => {
+                    const item = document.createElement('div');
+                    item.className = `menu-item ${tool.id === currentToolId ? 'active' : ''}`;
+                    item.innerHTML = `${tool.icon} <span>${tool.name}</span>`;
+                    item.onclick = () => selectTool(tool.id);
+                    sidebarMenu.appendChild(item);
+                });
+            });
+        }
+
+        function selectTool(id) {
+            if(isExecuting) return; 
+            
+            let tool = tools.find(t => t.id === id);
+            // Agar localStorage dagi id topilmasa, 1-asbobni tanlash
+            if (!tool) {
+                id = tools[0].id;
+                tool = tools[0];
+            }
+            
+            currentToolId = id;
+            localStorage.setItem('kali_last_tool', id);
+            
+            document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+            renderSidebar(); 
+            
+            currentToolTitle.innerHTML = `${tool.icon} ${tool.name}`;
+            formTitle.textContent = `${tool.name} Sozlamalari`;
+            
+            formContainer.innerHTML = '';
+            btnCopy.style.display = 'none';
+            
+            if (tool.fields.length === 0) {
+                formContainer.innerHTML = '<div class="log-muted" style="margin-bottom:15px; font-size: 0.9rem;">Bu asbob uchun qo\'shimcha parametrlar talab qilinmaydi. Shunchaki "Bajarish" ni bosing.</div>';
+            }
+
+            tool.fields.forEach(field => {
+                const group = document.createElement('div');
+                group.className = 'form-group';
+                
+                const label = document.createElement('label');
+                label.htmlFor = field.id;
+                label.textContent = field.label;
+                group.appendChild(label);
+                
+                if (field.type === 'select') {
+                    const select = document.createElement('select');
+                    select.id = field.id;
+                    select.className = 'form-control';
+                    field.options.forEach(opt => {
+                        const option = document.createElement('option');
+                        option.value = opt.val;
+                        option.textContent = opt.text;
+                        select.appendChild(option);
+                    });
+                    group.appendChild(select);
+                } else {
+                    const input = document.createElement('input');
+                    input.type = field.type;
+                    input.id = field.id;
+                    input.className = 'form-control';
+                    if (field.placeholder) input.placeholder = field.placeholder;
+                    if (field.value) input.value = field.value;
+                    if (field.min) input.min = field.min;
+                    if (field.max) input.max = field.max;
+                    
+                    input.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') btnExecute.click();
+                    });
+                    
+                    group.appendChild(input);
+                }
+                formContainer.appendChild(group);
+            });
+            
+            const firstInput = formContainer.querySelector('input, select');
+            if(firstInput) firstInput.focus();
+        }
+
+        // --- HODISALAR (EVENTS) ---
+        btnExecute.onclick = async () => {
+            if(isExecuting) return;
+            const tool = tools.find(t => t.id === currentToolId);
+            
+            const data = {};
+            tool.fields.forEach(f => {
+                const el = document.getElementById(f.id);
+                if (el) data[f.id] = el.value;
+            });
+
+            isExecuting = true;
+            btnExecute.disabled = true;
+            setWorkingStatus(true);
+            btnCopy.style.display = 'none';
+            
+            await printToConsole(`\nroot@cybertools:~# ${tool.id} run`, { type: 'muted', instant: true });
+            
+            try {
+                const res = await tool.action(data, printToConsole);
+                if (res) {
+                    lastResult = res;
+                    btnCopy.style.display = 'flex';
+                }
+            } catch (err) {
+                await printToConsole(`Fatal Error: ${err.message}`, 'error');
+            }
+            
+            isExecuting = false;
+            btnExecute.disabled = false;
+            setWorkingStatus(false);
+        };
+
+        function clearTerminal() {
+            if(confirm("Terminaldagi barcha ma'lumotlar o'chirib tashlansinmi?")) {
+                terminalOut.innerHTML = '';
+                terminalOut.appendChild(typingCursor);
+                btnCopy.style.display = 'none';
+                lastResult = '';
+            }
+        }
+
+        btnClear.onclick = clearTerminal;
+
+        btnCopy.onclick = () => {
+            if (lastResult) {
+                navigator.clipboard.writeText(lastResult)
+                    .then(() => alert('Natija xotiraga (Clipboard) nusxalandi!'))
+                    .catch(err => printToConsole('Nusxa olishda xatolik yuz berdi.', 'error'));
+            }
+        };
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !isExecuting) clearTerminal();
+        });
+
+        // --- BOSHLASH ---
+        if(!currentToolId) currentToolId = tools[0].id;
+        renderSidebar();
+        selectTool(currentToolId);
+        terminalOut.appendChild(typingCursor);
+        
+    </script>
+</body>
+</html>
